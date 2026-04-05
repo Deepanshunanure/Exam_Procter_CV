@@ -711,11 +711,16 @@ app = FastAPI(
     version="2.1.0",
 )
 
+import os
+
+# CORS origins from environment variable, fallback to localhost for development
+ALLOWED_ORIGINS = os.environ.get("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 
@@ -857,8 +862,10 @@ def run_webcam():
 
 if __name__ == "__main__":
     import sys
+    import os
     if "--server" in sys.argv:
         import uvicorn
-        uvicorn.run("proctor_detector:app", host="0.0.0.0", port=8765, reload=True)
+        port = int(os.environ.get("PORT", 8765))
+        uvicorn.run("proctor_detector:app", host="0.0.0.0", port=port, reload=False)
     else:
         run_webcam()

@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 
-const API_URL = "http://localhost:8765";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8765";
 
 function MetricPill({
   label,
