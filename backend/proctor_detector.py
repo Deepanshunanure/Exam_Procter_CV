@@ -55,15 +55,13 @@ from pydantic import BaseModel
 # ── optional heavy imports (graceful degradation if missing) ──────────────────
 try:
     import mediapipe as mp
-    mp_face_mesh      = mp.solutions.face_mesh
-    mp_face_detect    = mp.solutions.face_detection
-    mp_hands          = mp.solutions.hands
-    mp_drawing        = mp.solutions.drawing_utils
-    mp_drawing_styles = mp.solutions.drawing_styles
-    HAS_MEDIAPIPE     = True
-except ImportError:
+    # Temporarily disable MediaPipe to fix deployment
+    # TODO: Update to new MediaPipe Tasks API
     HAS_MEDIAPIPE = False
-    logging.warning("MediaPipe not found — face/hand detections disabled")
+    print("MediaPipe temporarily disabled for deployment compatibility")
+except ImportError as e:
+    HAS_MEDIAPIPE = False
+    print(f"MediaPipe not found: {e} — face/hand detections disabled")
 
 try:
     from ultralytics import YOLO as _YOLO
@@ -272,21 +270,10 @@ class ProctoringDetector:
 
         self._mar_history: Deque[float] = deque(maxlen=60)
 
-        if HAS_MEDIAPIPE:
-            self.face_mesh = mp_face_mesh.FaceMesh(
-                max_num_faces=4,
-                refine_landmarks=True,
-                min_detection_confidence=0.55,
-                min_tracking_confidence=0.55,
-            )
-            self.hands = mp_hands.Hands(
-                max_num_hands=2,
-                min_detection_confidence=0.6,
-                min_tracking_confidence=0.6,
-            )
-        else:
-            self.face_mesh = None
-            self.hands     = None
+        # MediaPipe temporarily disabled for deployment
+        self.face_landmarker = None
+        self.hand_landmarker = None
+        print("ProctoringDetector initialized (MediaPipe disabled for deployment)")
 
     @staticmethod
     def _ear(lms, indices, w, h) -> float:
