@@ -3,7 +3,6 @@ FROM python:3.9-slim
 
 # Set working directory
 WORKDIR /app
-
 # Install system dependencies for OpenCV and MediaPipe
 RUN apt-get update && apt-get install -y \
     libglib2.0-0 \
